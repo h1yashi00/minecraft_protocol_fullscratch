@@ -7,7 +7,7 @@ class Test_ServerListPing(unittest.TestCase):
         server = s.get_list()
         self.assertEqual(server.name(), "A Minecraft Server")
         self.assertEqual(server.version(), "1.18.1")
-        self.assertEqual(server.online_players(), 0)
+        # self.assertEqual(server.online_players(), 0) online players are dynamic!
         self.assertEqual(server.max_players(), 20)
         self.assertEqual(server.favicon(), 'default')
 

@@ -1,20 +1,37 @@
 from unittest import TestCase
 import util
+from unittest.mock import patch
 
 class Test_readVarInt(TestCase):
-    pass
-    # def test_x00(self):
-    #     self.assertEqual(util.readVarInt(b'\x00'), 0)
-    # def test_x01(self):
-    #     self.assertEqual(util.readVarInt(b'\x01'), 1)
-    # def test_x02(self):
-    #     self.assertEqual(util.readVarInt(b'\x02'), 2)
-    # def test_x7f(self):
-    #     self.assertEqual(util.readVarInt(b'\x7f'), 127)
-    # def test_x80x01(self):
-    #     self.assertEqual(util.readVarInt(b'\x80\x01'), 128)
-    # def test_xffx01(self):
-    #     self.assertEqual(util.readVarInt(b'\xff\x01'), 255)
+    @patch("util._readByte")
+    def test_x00(self, _readByte_patch):
+        _readByte_patch.return_value = b'\x00'
+        self.assertEqual(util.readVarInt(""), 0)
+
+    @patch("util._readByte")
+    def test_x01(self, _readByte_patch):
+        _readByte_patch.return_value = b'\x01'
+        self.assertEqual(util.readVarInt(""), 1)
+
+    @patch("util._readByte")
+    def test_x02(self, _readByte_patch):
+        _readByte_patch.return_value = b'\x02'
+        self.assertEqual(util.readVarInt(""), 2)
+
+    @patch("util._readByte")
+    def test_x7f(self, _readByte_patch):
+        _readByte_patch.return_value = b'\x7f'
+        self.assertEqual(util.readVarInt(""), 127)
+
+    @patch("util._readByte")
+    def test_x80x01(self, _readByte_patch):
+        _readByte_patch.side_effect = [b'\x80', b'\x01']
+        self.assertEqual(util.readVarInt(""), 128)
+
+    @patch("util._readByte")
+    def test_xffx01(self, _readByte_patch):
+        _readByte_patch.side_effect = [b'\xff', b'\x01']
+        self.assertEqual(util.readVarInt(""), 255)
 
 class Test_writeVarInt(TestCase):
 
@@ -28,6 +45,10 @@ class Test_writeVarInt(TestCase):
         self.assertEqual(util.writeVarInt(127), b'\x7f')
     def test_128(self):
         self.assertEqual(util.writeVarInt(128), b'\x80\x01')
+    def test_129(self):
+        self.assertEqual(util.writeVarInt(129), b'\x81\x01')
+    def test_256(self):
+        self.assertEqual(util.writeVarInt(256), b'\x80\x02')
     def test_2147483647(self):
         self.assertEqual(util.writeVarInt(2147483647), b'\xff\xff\xff\xff\x07')
 

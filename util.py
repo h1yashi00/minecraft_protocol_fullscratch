@@ -4,12 +4,15 @@ import struct
 def sendData(connection, data):
     connection.send(writeVarInt(len(data)) + data)
 
+def _readByte(sock):
+    return sock.recv(1)
+
 def readVarInt(sock):
     value = 0
     length = 0
     currentByte = b''
     while True:
-        currentByte = int.from_bytes(sock.recv(1), 'big')
+        currentByte = int.from_bytes(_readByte(sock), 'big')
         value |= (currentByte & 0x7F) << (length * 7)
 
         length += 1
